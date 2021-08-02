@@ -18,16 +18,21 @@ public class UserSelectServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		 try {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
 			   //DB接続に使用するクラス
 			   Connection users = null;
 			   try {
-			    // MySQL用のJDBCドライバーのクラスをロードする
+
+				   /* // MySQL用のJDBCドライバーのクラスをロードする
 			    Class.forName("com.mysql.jdbc.Driver");
 			    // SQLサーバーへの接続に関するインスタンスを取得する
 			    users = DriverManager.getConnection("jdbc:mysql://localhost/servlet_db",
 			      "root","");
+			      */
+
+				   users = DBConnection.openConnection();
 			    //レコードを管理する配列用意
 			    ArrayList<Member> list = new ArrayList<Member>();
 			    //SQLを実行するためのクラスを用意
@@ -43,25 +48,37 @@ public class UserSelectServlet extends HttpServlet {
 			     list.add(new Member(id,name,picture));
 			    }
 			    result.close(); //SQLの結果を受け取ったバッファを閉じる
-			    state.close(); //SQLを送信したStatementを閉じる
+			    DBConnection.closeConnection(users,state);
+
+			    /*
+			     state.close(); //SQLを送信したStatementを閉じる
 			    users.close();  //DB接続を閉じる
+			    */
+
 			    request.setAttribute("list",list);
 			RequestDispatcher rd =
 			getServletContext().getRequestDispatcher("/WEB-INF/select.jsp");
 			    rd.forward(request,response);
 			   //クラスが存在しなかったらエラーを表示
+
+			   /*
 			   } catch(ClassNotFoundException e) {
 			    e.printStackTrace();
 			   }
-			 //SQL実行時エラーが発生したら、エラーを表示
+			   */
+
+			    //SQL実行時エラーが発生したら、エラーを表示
 		 } catch(SQLException e) {
 		  e.printStackTrace();
 		 }
 	}
+
+
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
